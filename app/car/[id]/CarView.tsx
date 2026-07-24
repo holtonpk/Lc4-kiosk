@@ -205,15 +205,15 @@ function StatPill({
       : raw.toString();
   return (
     <div className="flex-1 flex flex-col items-center py-5 border-r border-zinc-800 last:border-r-0">
-      <div className="flex items-end gap-1 leading-none mb-1.5">
+      <div className="flex items-end gap-0.5 leading-none mb-1.5">
         <span className="font-bebas text-[clamp(32px,3.5vw,48px)] text-white tabular-nums leading-none">
           {display}
         </span>
-        <span className="font-bebas text-[clamp(14px,1.5vw,20px)] text-zinc-500 leading-none mb-0.5">
+        <span className="font-bebas text-[clamp(14px,1.5vw,20px)] text-zinc-500 leading-none mb-1">
           {unit}
         </span>
       </div>
-      <span className="font-inter text-[9px] tracking-[0.3em] uppercase text-zinc-600">
+      <span className="font-inter text-[9px] tracking-[0.3em] uppercase text-white">
         {label}
       </span>
     </div>
