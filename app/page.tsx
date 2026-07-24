@@ -15,10 +15,6 @@ export default function Screensaver() {
       className="relative w-screen h-screen bg-black flex flex-col items-center justify-center overflow-hidden"
       onClick={() => router.push("/garage")}
     >
-      <div className="fixed top-0 right-0 p-2 bg-white text-black">
-        This will be the sleep screen when the kiosk is not in use. touching the
-        screen will wake the screen and take you to the next page
-      </div>
       {/* Subtle radial glow */}
       <div className="absolute inset-0 bg-radial-[ellipse_60%_40%_at_50%_50%] from-zinc-800/30 to-transparent pointer-events-none" />
 

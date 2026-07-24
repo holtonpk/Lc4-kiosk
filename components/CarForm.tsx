@@ -49,6 +49,37 @@ function Field({
   );
 }
 
+function NumberField({
+  label,
+  value,
+  onChange,
+  placeholder,
+  step,
+  hint,
+}: {
+  label: string;
+  value: number | undefined;
+  onChange: (v: number | undefined) => void;
+  placeholder?: string;
+  step?: string;
+  hint?: string;
+}) {
+  return (
+    <label className="block">
+      <span className="block text-sm font-semibold text-zinc-700 mb-1.5">{label}</span>
+      <input
+        type="number"
+        step={step}
+        value={value ?? ""}
+        placeholder={placeholder}
+        onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
+        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-lg text-zinc-900 focus:border-zinc-900 focus:outline-none"
+      />
+      {hint && <span className="block text-xs text-zinc-400 mt-1">{hint}</span>}
+    </label>
+  );
+}
+
 function ListEditor({
   label,
   placeholder,
@@ -307,6 +338,38 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
               value={form.tagline}
               onChange={(v) => update("tagline", v)}
               placeholder="A short line about this car"
+            />
+          </div>
+        </section>
+
+        {/* Performance stats */}
+        <section className="rounded-2xl bg-white p-6 shadow">
+          <h2 className="text-lg font-bold text-zinc-900 mb-4">Performance Stats</h2>
+          <p className="text-sm text-zinc-500 mb-4">
+            These power the animated stat pills shown on the kiosk vehicle page.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <NumberField
+              label="Horsepower"
+              value={form.horsepower}
+              onChange={(v) => update("horsepower", v)}
+              placeholder="e.g. 443"
+              hint="hp"
+            />
+            <NumberField
+              label="Top Speed"
+              value={form.topSpeed}
+              onChange={(v) => update("topSpeed", v)}
+              placeholder="e.g. 182"
+              hint="mph"
+            />
+            <NumberField
+              label="0–60 mph"
+              value={form.zeroToSixty}
+              onChange={(v) => update("zeroToSixty", v)}
+              placeholder="e.g. 3.6"
+              step="0.1"
+              hint="seconds"
             />
           </div>
         </section>

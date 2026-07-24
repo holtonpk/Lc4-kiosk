@@ -236,20 +236,27 @@ export default function CarView({car}: {car: Car}) {
     };
   }, []);
 
-  const hp = parseInt(
-    car.specs.engine.find((s) => s.includes("hp"))?.match(/(\d+)\s*hp/)?.[1] ||
-      "0",
-  );
-  const speed = parseInt(
-    car.specs.performance
-      .find((s) => s.includes("Top Speed"))
-      ?.match(/(\d+)\s*mph/)?.[1] || "0",
-  );
-  const zeroSixty = parseFloat(
-    car.specs.performance
-      .find((s) => s.includes("0–60"))
-      ?.match(/([\d.]+)\s*seconds/)?.[1] || "0",
-  );
+  const hp =
+    car.horsepower ??
+    parseInt(
+      car.specs.engine
+        .find((s) => s.includes("hp"))
+        ?.match(/(\d+)\s*hp/)?.[1] || "0",
+    );
+  const speed =
+    car.topSpeed ??
+    parseInt(
+      car.specs.performance
+        .find((s) => s.includes("Top Speed"))
+        ?.match(/(\d+)\s*mph/)?.[1] || "0",
+    );
+  const zeroSixty =
+    car.zeroToSixty ??
+    parseFloat(
+      car.specs.performance
+        .find((s) => s.includes("0–60"))
+        ?.match(/([\d.]+)\s*seconds/)?.[1] || "0",
+    );
   const hasStats = hp > 0 || speed > 0 || zeroSixty > 0;
 
   return (
@@ -259,15 +266,6 @@ export default function CarView({car}: {car: Car}) {
         className={`flex-none flex items-center justify-between px-10 pt-8 pb-4 transition-all duration-700 ${visible ? "opacity-100" : "opacity-0"}`}
       >
         <div className="flex items-center gap-6">
-          <button
-            onClick={() => router.push("/")}
-            className="flex items-center group"
-            aria-label="Home"
-          >
-            <span className="font-bebas text-3xl leading-none tracking-widest group-hover:text-zinc-300 transition-colors">
-              LC<span className="text-[#FF0000]">4</span>
-            </span>
-          </button>
           <button
             onClick={() => router.push("/garage")}
             className="flex items-center gap-2 pl-3 pr-4 py-2 rounded-full border border-zinc-700 text-zinc-300 hover:text-white hover:border-zinc-500 active:bg-zinc-900 transition-colors"
@@ -425,7 +423,6 @@ export default function CarView({car}: {car: Car}) {
                     </svg>
                   ),
                 },
-
                 {
                   key: "photos" as Tab,
                   label: "Photos",
@@ -522,6 +519,17 @@ export default function CarView({car}: {car: Car}) {
   );
 }
 
+function SpecItem({text}: {text: string}) {
+  const i = text.indexOf(":");
+  if (i === -1) return <>{text}</>;
+  return (
+    <>
+      <span className="font-semibold text-white">{text.slice(0, i + 1)}</span>
+      {text.slice(i + 1)}
+    </>
+  );
+}
+
 function SpecsTab({car}: {car: Car}) {
   const sections = [
     {label: "Engine", items: car.specs.engine},
@@ -541,7 +549,7 @@ function SpecsTab({car}: {car: Car}) {
               <div key={i} className="flex items-start gap-2.5">
                 <span className="mt-[7px] w-1 h-1 rounded-full bg-[#FF0000] flex-none" />
                 <span className="font-inter text-sm text-zinc-300 leading-relaxed">
-                  {item}
+                  <SpecItem text={item} />
                 </span>
               </div>
             ))}

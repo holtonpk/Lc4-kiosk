@@ -27,6 +27,9 @@ export interface Car {
   usCount?: string;
   tagline: string;
   heroImage: string;
+  horsepower?: number;
+  topSpeed?: number;
+  zeroToSixty?: number;
   specs: CarSpec;
   videos: {title: string; url: string}[];
   photos: string[];
@@ -100,6 +103,9 @@ export const emptyCar = (): Omit<Car, "id"> => ({
   usCount: "",
   tagline: "",
   heroImage: "",
+  horsepower: undefined,
+  topSpeed: undefined,
+  zeroToSixty: undefined,
   specs: {engine: [], drivetrain: [], performance: [], dimensions: []},
   videos: [],
   photos: [],
