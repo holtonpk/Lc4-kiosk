@@ -75,7 +75,7 @@ export default function GarageView({cars}: {cars: Car[]}) {
                       src={car.heroImage}
                       alt={car.model}
                       fill
-                      className="object-contain group-hover:scale-105 p-4 transition-transform duration-500"
+                      className="object-contain group-hover:scale-105 p-4 pb-0 transition-transform duration-500 car-image "
                       onError={() => {}}
                     />
                   ) : (
@@ -92,14 +92,14 @@ export default function GarageView({cars}: {cars: Car[]}) {
                 </div>
 
                 {/* Info */}
-                <div className="p-4 ">
+                <div className="p-4 pt-2">
                   <p className="font-inter text-[10px] tracking-[0.3em] uppercase text-zinc-500 mb-1">
                     {car.year}
                   </p>
                   <h2 className="font-bebas text-2xl tracking-wider text-white leading-tight">
                     {car.shortName}
                   </h2>
-                  {car.productionNumber && (
+                  {/* {car.productionNumber && (
                     <p className="font-inter text-[10px] text-zinc-500 mt-1">
                       #{car.productionNumber}
                     </p>
@@ -108,7 +108,7 @@ export default function GarageView({cars}: {cars: Car[]}) {
                     <p className="font-inter text-[10px] text-zinc-600 mt-0.5">
                       {car.usCount}
                     </p>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Hover arrow */}
