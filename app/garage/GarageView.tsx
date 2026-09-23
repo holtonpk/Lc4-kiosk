@@ -1,6 +1,7 @@
 "use client";
 import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
+import Logo from "@/components/Logo";
 import type {Car} from "@/lib/cars";
 import Image from "next/image";
 
@@ -24,12 +25,7 @@ export default function GarageView({cars}: {cars: Car[]}) {
           onClick={() => router.push("/")}
           className="flex flex-col gap-0.5 group"
         >
-          <span className="font-bebas text-4xl leading-none tracking-widest">
-            LC<span className="text-[#FF0000]">4</span>
-          </span>
-          <span className="font-inter text-[10px] tracking-[0.35em] uppercase text-zinc-500">
-            La Casita 4
-          </span>
+          <Logo onDark className="w-40 h-auto" />
         </button>
 
         <div className="text-right">
@@ -39,7 +35,7 @@ export default function GarageView({cars}: {cars: Car[]}) {
         </div>
       </header>
 
-      {/* Red rule */}
+      {/* Divider rule */}
       <div
         className={`flex-none h-[1px] bg-zinc-800 mx-12 transition-all duration-700 delay-100 ${visible ? "opacity-100" : "opacity-0"}`}
       />

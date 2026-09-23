@@ -1,6 +1,7 @@
 "use client";
 import {useState} from "react";
 import {useAdminAuth} from "@/lib/adminAuth";
+import Logo from "@/components/Logo";
 
 const PIN_LENGTH = (process.env.NEXT_PUBLIC_ADMIN_PIN || "").length || 4;
 
@@ -34,8 +35,9 @@ function PinScreen({unlock}: {unlock: (pin: string) => Promise<boolean>}) {
 
   return (
     <div className="h-screen overflow-y-auto scroll-container bg-zinc-100 flex flex-col items-center justify-center px-6 py-12">
+      <Logo className="w-56 h-auto mb-6" />
       <p className="font-bebas text-5xl tracking-widest text-zinc-900 mb-2">
-        LC<span className="text-[#FF0000]">4</span> Vehicle Manager
+        Vehicle Manager
       </p>
       <p className="text-zinc-500 text-lg mb-10">Enter the PIN to make changes</p>
 
@@ -101,9 +103,12 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
   return (
     <div className="h-screen overflow-y-auto scroll-container bg-zinc-100">
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-200 sticky top-0 z-40">
-        <p className="font-bebas text-2xl tracking-widest text-zinc-900">
-          LC<span className="text-[#FF0000]">4</span> Vehicle Manager
-        </p>
+        <div className="flex items-center gap-3">
+          <Logo className="w-20 h-auto" />
+          <p className="font-bebas text-2xl tracking-widest text-zinc-900">
+            Vehicle Manager
+          </p>
+        </div>
         <button
           onClick={lock}
           className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-600 hover:bg-zinc-50"

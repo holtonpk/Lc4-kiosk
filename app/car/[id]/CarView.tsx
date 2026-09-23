@@ -295,7 +295,7 @@ export default function CarView({car}: {car: Car}) {
         </div>
       </header>
 
-      <div className="flex-none h-[1px] bg-[#FF0000] opacity-50" />
+      <div className="flex-none h-[1px] bg-[#5B9BD5] opacity-50" />
 
       {/* Main layout */}
       <div className="flex-1 flex overflow-hidden">
@@ -547,7 +547,7 @@ function SpecsTab({car}: {car: Car}) {
           <div className="flex flex-col gap-2">
             {section.items.map((item, i) => (
               <div key={i} className="flex items-start gap-2.5">
-                <span className="mt-[7px] w-1 h-1 rounded-full bg-[#FF0000] flex-none" />
+                <span className="mt-[7px] w-1 h-1 rounded-full bg-[#5B9BD5] flex-none" />
                 <span className="font-inter text-sm text-zinc-300 leading-relaxed">
                   <SpecItem text={item} />
                 </span>

@@ -1,6 +1,7 @@
 "use client";
 import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
+import Logo from "@/components/Logo";
 
 export default function Screensaver() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export default function Screensaver() {
 
       {/* Top rule */}
       <div
-        className={`absolute top-0 left-0 right-0 h-[2px] bg-[#FF0000] transition-all duration-1000 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`absolute top-0 left-0 right-0 h-[2px] bg-[#5B9BD5] transition-all duration-1000 ${visible ? "opacity-100" : "opacity-0"}`}
       />
 
       {/* Content */}
@@ -29,22 +30,17 @@ export default function Screensaver() {
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
         }`}
       >
-        {/* LC4 Wordmark */}
-        <div className="flex flex-col items-center gap-1">
-          <span className="font-bebas text-[clamp(72px,12vw,160px)] leading-none tracking-widest text-white">
-            LC
-            <span className="text-[#FF0000]">4</span>
-          </span>
-          <span className="font-inter text-[clamp(12px,1.5vw,18px)] tracking-[0.4em] uppercase text-zinc-400 font-light">
-            La Casita 4
-          </span>
-        </div>
+        {/* LC4 Logo */}
+        <Logo
+          onDark
+          className="w-[clamp(280px,40vw,560px)] h-auto max-h-[150px]"
+        />
 
         {/* Divider */}
         <div className="w-24 h-[1px] bg-zinc-700" />
 
         {/* Tagline */}
-        <p className="font-inter text-[clamp(14px,1.8vw,22px)] tracking-[0.2em] uppercase text-zinc-300 font-light">
+        <p className="text-sm font-inter text-[clamp(14px,1.8vw,22px)] tracking-[0.2em] uppercase text-zinc-300 font-light">
           There is no substitute.
         </p>
       </div>
@@ -73,7 +69,7 @@ export default function Screensaver() {
 
       {/* Bottom rule */}
       <div
-        className={`absolute bottom-0 left-0 right-0 h-[2px] bg-[#FF0000] transition-all duration-1000 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`absolute bottom-0 left-0 right-0 h-[2px] bg-[#5B9BD5] transition-all duration-1000 ${visible ? "opacity-100" : "opacity-0"}`}
       />
     </div>
   );

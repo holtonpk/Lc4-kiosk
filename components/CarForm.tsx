@@ -485,7 +485,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
         <button
           onClick={handleSave}
           disabled={busy}
-          className="rounded-xl bg-[#FF0000] px-8 py-4 text-lg font-semibold text-white shadow hover:bg-red-700 transition-colors disabled:opacity-50"
+          className="rounded-xl bg-[#5B9BD5] px-8 py-4 text-lg font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save Changes"}
         </button>

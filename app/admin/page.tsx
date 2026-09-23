@@ -25,7 +25,7 @@ export default function AdminHomePage() {
         <h1 className="text-3xl font-bold text-zinc-900">Your Vehicles</h1>
         <button
           onClick={() => router.push("/admin/new")}
-          className="rounded-xl bg-[#FF0000] px-6 py-4 text-lg font-semibold text-white shadow hover:bg-red-700 transition-colors"
+          className="rounded-xl bg-[#5B9BD5] px-6 py-4 text-lg font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors"
         >
           + Add New Vehicle
         </button>
