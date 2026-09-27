@@ -33,6 +33,8 @@ export interface Car {
   specs: CarSpec;
   videos: {title: string; url: string}[];
   photos: string[];
+  // Hidden cars stay in the admin but are left off the kiosk.
+  hidden?: boolean;
 }
 
 const CARS_COLLECTION = "cars";
@@ -109,4 +111,5 @@ export const emptyCar = (): Omit<Car, "id"> => ({
   specs: {engine: [], drivetrain: [], performance: [], dimensions: []},
   videos: [],
   photos: [],
+  hidden: false,
 });

@@ -2,7 +2,7 @@
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 import Image from "next/image";
-import {useCars, deleteCar, type Car} from "@/lib/cars";
+import {useCars, deleteCar, saveCar, type Car} from "@/lib/cars";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function AdminHomePage() {
@@ -10,6 +10,13 @@ export default function AdminHomePage() {
   const {cars, loading} = useCars();
   const [toDelete, setToDelete] = useState<Car | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [toggling, setToggling] = useState<string | null>(null);
+
+  async function toggleHidden(car: Car) {
+    setToggling(car.id);
+    await saveCar({...car, hidden: !car.hidden});
+    setToggling(null);
+  }
 
   async function confirmDelete() {
     if (!toDelete) return;
@@ -49,7 +56,7 @@ export default function AdminHomePage() {
                 onClick={() => router.push(`/admin/${car.id}`)}
                 className="text-left flex-1"
               >
-                <div className="relative h-36 bg-zinc-100">
+                <div className={`relative h-36 bg-zinc-100 ${car.hidden ? "opacity-40" : ""}`}>
                   {car.heroImage ? (
                     <Image
                       src={car.heroImage}
@@ -64,7 +71,14 @@ export default function AdminHomePage() {
                   )}
                 </div>
                 <div className="p-4">
-                  <p className="text-sm text-zinc-500">{car.year}</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm text-zinc-500">{car.year}</p>
+                    {car.hidden && (
+                      <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                        Hidden
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xl font-bold text-zinc-900">
                     {car.shortName || "Untitled Vehicle"}
                   </p>
@@ -76,6 +90,13 @@ export default function AdminHomePage() {
                   className="flex-1 rounded-lg bg-zinc-900 text-white py-2.5 text-sm font-semibold hover:bg-zinc-700"
                 >
                   Edit
+                </button>
+                <button
+                  onClick={() => toggleHidden(car)}
+                  disabled={toggling === car.id}
+                  className="rounded-lg border border-zinc-300 text-zinc-600 px-3 py-2.5 text-sm font-semibold hover:bg-zinc-50 disabled:opacity-50"
+                >
+                  {car.hidden ? "Show" : "Hide"}
                 </button>
                 <button
                   onClick={() => setToDelete(car)}

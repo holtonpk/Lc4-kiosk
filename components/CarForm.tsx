@@ -50,6 +50,44 @@ function Field({
   );
 }
 
+function VisibilityToggle({
+  visible,
+  onChange,
+}: {
+  visible: boolean;
+  onChange: (visible: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={visible}
+      onClick={() => onChange(!visible)}
+      className="flex w-full items-center justify-between gap-4 text-left"
+    >
+      <span>
+        <span className="block text-lg font-bold text-zinc-900">Show on Kiosk</span>
+        <span className="block text-sm text-zinc-500">
+          {visible
+            ? "This vehicle appears in the garage."
+            : "Hidden from the garage. It stays here in the admin for later."}
+        </span>
+      </span>
+      <span
+        className={`relative h-8 w-14 flex-none rounded-full transition-colors ${
+          visible ? "bg-[#5B9BD5]" : "bg-zinc-300"
+        }`}
+      >
+        <span
+          className={`absolute top-1 left-1 h-6 w-6 rounded-full bg-white shadow transition-transform ${
+            visible ? "translate-x-6" : ""
+          }`}
+        />
+      </span>
+    </button>
+  );
+}
+
 function NumberField({
   label,
   value,
@@ -353,6 +391,14 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
       </button>
 
       <div className="flex flex-col gap-8">
+        {/* Visibility */}
+        <section className="rounded-2xl bg-white p-6 shadow">
+          <VisibilityToggle
+            visible={!form.hidden}
+            onChange={(visible) => update("hidden", !visible)}
+          />
+        </section>
+
         {/* Basic info */}
         <section className="rounded-2xl bg-white p-6 shadow">
           <h2 className="text-lg font-bold text-zinc-900 mb-4">Basic Info</h2>

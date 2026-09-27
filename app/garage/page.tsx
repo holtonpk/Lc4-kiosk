@@ -3,5 +3,5 @@ import GarageView from "./GarageView";
 
 export default async function GaragePage() {
   const cars = await getAllCars();
-  return <GarageView cars={cars} />;
+  return <GarageView cars={cars.filter((car) => !car.hidden)} />;
 }
