@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import Image from "next/image";
 import {emptyCar, newCarId, saveCar, deleteCar, type Car, type CarSpec} from "@/lib/cars";
 import {uploadCarImage, uploadCarVideo, deleteCarFile} from "@/lib/storage";
+import {youTubeId, youTubeEmbed, youTubeWatchUrl} from "@/lib/youtube";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
 type SpecKey = keyof CarSpec;
@@ -141,59 +142,120 @@ function VideoEditor({
   uploading: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [link, setLink] = useState("");
+  const [linkError, setLinkError] = useState(false);
 
   function removeAt(i: number) {
     const removed = videos[i];
     onChange(videos.filter((_, idx) => idx !== i));
-    if (removed.url) deleteCarFile(removed.url);
+    if (removed.url && !youTubeId(removed.url)) deleteCarFile(removed.url);
+  }
+
+  function addLink() {
+    const ytId = youTubeId(link);
+    if (!ytId) {
+      setLinkError(true);
+      return;
+    }
+    onChange([...videos, {title: "", url: youTubeWatchUrl(ytId)}]);
+    setLink("");
   }
 
   return (
     <div>
       <div className="flex flex-col gap-4">
-        {videos.map((v, i) => (
-          <div key={v.url || i} className="flex flex-col sm:flex-row gap-3 rounded-xl border border-zinc-200 p-3">
-            <video src={v.url} controls className="w-full sm:w-56 aspect-video rounded-lg bg-black flex-none" />
-            <div className="flex-1 flex flex-col gap-2">
-              <input
-                value={v.title}
-                placeholder="Video title, e.g. Test Drive"
-                onChange={(e) => {
-                  const next = [...videos];
-                  next[i] = {...next[i], title: e.target.value};
-                  onChange(next);
-                }}
-                className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 focus:border-zinc-900 focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => removeAt(i)}
-                className="self-start rounded-lg border border-zinc-300 text-zinc-500 px-3 py-1.5 text-sm hover:bg-zinc-50"
-              >
-                Remove Video
-              </button>
+        {videos.map((v, i) => {
+          const ytId = youTubeId(v.url);
+          return (
+            <div key={v.url || i} className="flex flex-col sm:flex-row gap-3 rounded-xl border border-zinc-200 p-3">
+              {ytId ? (
+                <iframe
+                  src={youTubeEmbed(ytId)}
+                  title={v.title || "YouTube video"}
+                  allow="encrypted-media; picture-in-picture; fullscreen"
+                  allowFullScreen
+                  className="w-full sm:w-56 aspect-video rounded-lg bg-black flex-none"
+                />
+              ) : (
+                <video src={v.url} controls className="w-full sm:w-56 aspect-video rounded-lg bg-black flex-none" />
+              )}
+              <div className="flex-1 flex flex-col gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  {ytId ? "YouTube" : "Uploaded"}
+                </span>
+                <input
+                  value={v.title}
+                  placeholder="Video title, e.g. Test Drive"
+                  onChange={(e) => {
+                    const next = [...videos];
+                    next[i] = {...next[i], title: e.target.value};
+                    onChange(next);
+                  }}
+                  className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 focus:border-zinc-900 focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeAt(i)}
+                  className="self-start rounded-lg border border-zinc-300 text-zinc-500 px-3 py-1.5 text-sm hover:bg-zinc-50"
+                >
+                  Remove Video
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <input
-        ref={inputRef}
-        type="file"
-        accept="video/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) onUpload(file);
-          if (inputRef.current) inputRef.current.value = "";
-        }}
-        className="hidden"
-        id="video-upload"
-      />
-      <label
-        htmlFor="video-upload"
-        className="mt-3 inline-block cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-base font-semibold text-white hover:bg-zinc-700"
-      >
-        {uploading ? "Uploading…" : "+ Upload Video"}
-      </label>
+      <div className="mt-4 flex flex-col sm:flex-row gap-3">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="video/*"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) onUpload(file);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
+          className="hidden"
+          id="video-upload"
+        />
+        <label
+          htmlFor="video-upload"
+          className="flex-none cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-base font-semibold text-white hover:bg-zinc-700"
+        >
+          {uploading ? "Uploading…" : "+ Upload Video"}
+        </label>
+        <div className="flex-1 flex gap-2">
+          <input
+            type="url"
+            value={link}
+            placeholder="Paste a YouTube link"
+            onChange={(e) => {
+              setLink(e.target.value);
+              setLinkError(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addLink();
+              }
+            }}
+            className={`flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-base text-zinc-900 focus:outline-none ${
+              linkError ? "border-red-500 focus:border-red-500" : "border-zinc-300 focus:border-zinc-900"
+            }`}
+          />
+          <button
+            type="button"
+            onClick={addLink}
+            disabled={!link.trim()}
+            className="flex-none rounded-xl border border-zinc-900 px-5 py-3 text-base font-semibold text-zinc-900 hover:bg-zinc-50 disabled:border-zinc-300 disabled:text-zinc-400"
+          >
+            + Add Link
+          </button>
+        </div>
+      </div>
+      {linkError && (
+        <p className="mt-2 text-sm text-red-600">That doesn&apos;t look like a YouTube video link.</p>
+      )}
     </div>
   );
 }

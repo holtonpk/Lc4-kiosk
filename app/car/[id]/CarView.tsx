@@ -3,9 +3,10 @@ import {useState, useEffect} from "react";
 import {useRouter} from "next/navigation";
 import type {Car} from "@/lib/cars";
 import Image from "next/image";
+import {youTubeId, youTubeThumbnail, youTubeEmbed} from "@/lib/youtube";
 
 type Tab = "specs" | "videos" | "photos";
-type LightboxMedia = {type: "image" | "video"; src: string; title?: string};
+type LightboxMedia = {type: "image" | "video" | "youtube"; src: string; title?: string};
 type LightboxState = {items: LightboxMedia[]; index: number} | null;
 
 function ExpandIcon() {
@@ -134,6 +135,17 @@ function Lightbox({
             alt=""
             className="max-w-full max-h-[85vh] object-contain"
           />
+        ) : item.type === "youtube" ? (
+          <div className="w-[min(88vw,calc(80vh*16/9))] aspect-video rounded-lg overflow-hidden bg-black shadow-2xl">
+            <iframe
+              key={item.src}
+              src={youTubeEmbed(item.src, {autoplay: true})}
+              title={item.title || "Video"}
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+              className="w-full h-full border-0"
+            />
+          </div>
         ) : (
           <video
             key={item.src}
@@ -483,11 +495,12 @@ export default function CarView({car}: {car: Car}) {
                 car={car}
                 onOpen={(index) =>
                   setLightbox({
-                    items: car.videos.map((v) => ({
-                      type: "video",
-                      src: v.url,
-                      title: v.title,
-                    })),
+                    items: car.videos.map((v): LightboxMedia => {
+                      const ytId = youTubeId(v.url);
+                      return ytId
+                        ? {type: "youtube", src: ytId, title: v.title}
+                        : {type: "video", src: v.url, title: v.title};
+                    }),
                     index,
                   })
                 }
@@ -560,6 +573,28 @@ function SpecsTab({car}: {car: Car}) {
   );
 }
 
+function VideoThumb({url}: {url: string}) {
+  const ytId = youTubeId(url);
+  if (ytId)
+    return (
+      <Image
+        src={youTubeThumbnail(ytId)}
+        alt=""
+        fill
+        sizes="50vw"
+        className="object-cover"
+      />
+    );
+  return (
+    <video
+      src={url}
+      playsInline
+      muted
+      className="w-full h-full object-cover"
+    />
+  );
+}
+
 function VideosTab({car, onOpen}: {car: Car; onOpen: (index: number) => void}) {
   if (car.videos.length === 0)
     return (
@@ -583,12 +618,7 @@ function VideosTab({car, onOpen}: {car: Car; onOpen: (index: number) => void}) {
           className="text-left rounded-xl overflow-hidden bg-zinc-900 cursor-pointer"
         >
           <div className="relative w-full aspect-video bg-black">
-            <video
-              src={v.url}
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
+            <VideoThumb url={v.url} />
             <PlayIcon />
           </div>
           {v.title && (
