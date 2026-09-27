@@ -5,6 +5,19 @@ import Logo from "@/components/Logo";
 import type {Car} from "@/lib/cars";
 import Image from "next/image";
 
+// Renders "(…)" segments of a title smaller and dimmer than the main text.
+function CarTitle({name}: {name: string}) {
+  return name.split(/(\([^)]*\))/).map((part, i) =>
+    part.startsWith("(") ? (
+      <span key={i} className="text-lg text-zinc-400">
+        {part}
+      </span>
+    ) : (
+      part
+    ),
+  );
+}
+
 export default function GarageView({cars}: {cars: Car[]}) {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
@@ -93,7 +106,7 @@ export default function GarageView({cars}: {cars: Car[]}) {
                     {car.year}
                   </p>
                   <h2 className="font-bebas text-2xl tracking-wider text-white leading-tight">
-                    {car.shortName}
+                    <CarTitle name={car.shortName} />
                   </h2>
                   {/* {car.productionNumber && (
                     <p className="font-inter text-[10px] text-zinc-500 mt-1">
