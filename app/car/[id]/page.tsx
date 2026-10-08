@@ -13,7 +13,7 @@ export default async function CarPage({params}: {params: Promise<{id: string}>})
   if (!car || car.hidden)
     return (
       <div className="w-screen h-screen bg-black flex items-center justify-center">
-        <p className="text-zinc-500">Vehicle not found.</p>
+        <p className="text-body text-zinc-500">Vehicle not found.</p>
       </div>
     );
 

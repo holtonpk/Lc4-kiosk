@@ -9,15 +9,15 @@ export default function EditCarPage({params}: {params: Promise<{id: string}>}) {
   const router = useRouter();
   const {car, loading} = useCar(id);
 
-  if (loading) return <p className="text-lg text-zinc-500">Loading vehicle…</p>;
+  if (loading) return <p className="text-body text-zinc-500">Loading vehicle…</p>;
 
   if (!car)
     return (
       <div>
-        <p className="text-lg text-zinc-500 mb-4">That vehicle couldn&apos;t be found.</p>
+        <p className="text-body text-zinc-500 mb-4">That vehicle couldn&apos;t be found.</p>
         <button
           onClick={() => router.push("/admin")}
-          className="text-sm font-semibold text-zinc-700 hover:text-zinc-900"
+          className="text-caption font-semibold text-zinc-700 hover:text-zinc-900"
         >
           ← Back to All Vehicles
         </button>

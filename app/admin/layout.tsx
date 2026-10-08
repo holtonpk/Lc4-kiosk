@@ -34,12 +34,12 @@ function PinScreen({unlock}: {unlock: (pin: string) => Promise<boolean>}) {
   }
 
   return (
-    <div className="h-screen overflow-y-auto scroll-container bg-zinc-100 flex flex-col items-center justify-center px-6 py-12">
+    <div className="admin-ui admin-scroll h-screen scroll-container bg-zinc-100 flex flex-col items-center justify-center px-6 py-12">
       <Logo className="w-56 h-auto mb-6" />
       <p className="font-bebas text-5xl tracking-widest text-zinc-900 mb-2">
         Vehicle Manager
       </p>
-      <p className="text-zinc-500 text-lg mb-10">Enter the PIN to make changes</p>
+      <p className="text-zinc-500 text-body mb-10">Enter the PIN to make changes</p>
 
       <div className="flex gap-4 mb-10" aria-live="polite">
         {Array.from({length: PIN_LENGTH}).map((_, i) => (
@@ -53,7 +53,7 @@ function PinScreen({unlock}: {unlock: (pin: string) => Promise<boolean>}) {
       </div>
 
       {error && (
-        <p className="text-red-600 text-lg font-semibold mb-6">
+        <p className="text-red-600 text-body font-semibold mb-6">
           That PIN isn&apos;t right — try again.
         </p>
       )}
@@ -72,7 +72,7 @@ function PinScreen({unlock}: {unlock: (pin: string) => Promise<boolean>}) {
         <button
           onClick={backspace}
           disabled={checking}
-          className="aspect-square rounded-2xl bg-white shadow text-lg font-semibold text-zinc-500 active:bg-zinc-200 transition-colors disabled:opacity-50"
+          className="aspect-square rounded-2xl bg-white shadow text-body font-semibold text-zinc-500 active:bg-zinc-200 transition-colors disabled:opacity-50"
         >
           Clear
         </button>
@@ -93,7 +93,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
   const {ready, authed, unlock, lock} = useAdminAuth();
 
   if (!ready) {
-    return <div className="min-h-screen bg-zinc-100" />;
+    return <div className="h-screen bg-zinc-100" />;
   }
 
   if (!authed) {
@@ -101,7 +101,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
   }
 
   return (
-    <div className="h-screen overflow-y-auto scroll-container bg-zinc-100">
+    <div className="admin-ui admin-scroll h-screen scroll-container bg-zinc-100">
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-zinc-200 sticky top-0 z-40">
         <div className="flex items-center gap-3">
           <Logo className="w-20 h-auto" />
@@ -111,7 +111,7 @@ export default function AdminLayout({children}: {children: React.ReactNode}) {
         </div>
         <button
           onClick={lock}
-          className="rounded-full border border-zinc-300 px-4 py-2 text-sm font-semibold text-zinc-600 hover:bg-zinc-50"
+          className="rounded-full border border-zinc-300 px-4 py-2 text-caption font-semibold text-zinc-600 hover:bg-zinc-50"
         >
           Lock
         </button>

@@ -37,15 +37,15 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold text-zinc-700 mb-1.5">{label}</span>
+      <span className="block text-caption font-semibold text-zinc-700 mb-1.5">{label}</span>
       <input
         type={type}
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-lg text-zinc-900 focus:border-zinc-900 focus:outline-none"
+        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-body text-zinc-900 focus:border-zinc-900 focus:outline-none"
       />
-      {hint && <span className="block text-xs text-zinc-400 mt-1">{hint}</span>}
+      {hint && <span className="block text-caption text-zinc-400 mt-1">{hint}</span>}
     </label>
   );
 }
@@ -66,8 +66,8 @@ function VisibilityToggle({
       className="flex w-full items-center justify-between gap-4 text-left"
     >
       <span>
-        <span className="block text-lg font-bold text-zinc-900">Show on Kiosk</span>
-        <span className="block text-sm text-zinc-500">
+        <span className="block text-body font-bold text-zinc-900">Show on Kiosk</span>
+        <span className="block text-caption text-zinc-500">
           {visible
             ? "This vehicle appears in the garage."
             : "Hidden from the garage. It stays here in the admin for later."}
@@ -105,16 +105,16 @@ function NumberField({
 }) {
   return (
     <label className="block">
-      <span className="block text-sm font-semibold text-zinc-700 mb-1.5">{label}</span>
+      <span className="block text-caption font-semibold text-zinc-700 mb-1.5">{label}</span>
       <input
         type="number"
         step={step}
         value={value ?? ""}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value === "" ? undefined : Number(e.target.value))}
-        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-lg text-zinc-900 focus:border-zinc-900 focus:outline-none"
+        className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-body text-zinc-900 focus:border-zinc-900 focus:outline-none"
       />
-      {hint && <span className="block text-xs text-zinc-400 mt-1">{hint}</span>}
+      {hint && <span className="block text-caption text-zinc-400 mt-1">{hint}</span>}
     </label>
   );
 }
@@ -132,7 +132,7 @@ function ListEditor({
 }) {
   return (
     <div>
-      <span className="block text-sm font-semibold text-zinc-700 mb-1.5">{label}</span>
+      <span className="block text-caption font-semibold text-zinc-700 mb-1.5">{label}</span>
       <div className="flex flex-col gap-2">
         {items.map((item, i) => (
           <div key={i} className="flex gap-2">
@@ -144,7 +144,7 @@ function ListEditor({
                 next[i] = e.target.value;
                 onChange(next);
               }}
-              className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 text-base text-zinc-900 focus:border-zinc-900 focus:outline-none"
+              className="flex-1 rounded-xl border border-zinc-300 px-4 py-3 text-body text-zinc-900 focus:border-zinc-900 focus:outline-none"
             />
             <button
               type="button"
@@ -160,7 +160,7 @@ function ListEditor({
       <button
         type="button"
         onClick={() => onChange([...items, ""])}
-        className="mt-2 text-sm font-semibold text-zinc-700 hover:text-zinc-900"
+        className="mt-2 text-caption font-semibold text-zinc-700 hover:text-zinc-900"
       >
         + Add Detail
       </button>
@@ -218,7 +218,7 @@ function VideoEditor({
                 <video src={v.url} controls className="w-full sm:w-56 aspect-video rounded-lg bg-black flex-none" />
               )}
               <div className="flex-1 flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                <span className="text-caption font-semibold uppercase tracking-wider text-zinc-400">
                   {ytId ? "YouTube" : "Uploaded"}
                 </span>
                 <input
@@ -229,12 +229,12 @@ function VideoEditor({
                     next[i] = {...next[i], title: e.target.value};
                     onChange(next);
                   }}
-                  className="rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 focus:border-zinc-900 focus:outline-none"
+                  className="rounded-lg border border-zinc-300 px-3 py-2.5 text-body text-zinc-900 focus:border-zinc-900 focus:outline-none"
                 />
                 <button
                   type="button"
                   onClick={() => removeAt(i)}
-                  className="self-start rounded-lg border border-zinc-300 text-zinc-500 px-3 py-1.5 text-sm hover:bg-zinc-50"
+                  className="self-start rounded-lg border border-zinc-300 text-zinc-500 px-3 py-1.5 text-caption hover:bg-zinc-50"
                 >
                   Remove Video
                 </button>
@@ -258,7 +258,7 @@ function VideoEditor({
         />
         <label
           htmlFor="video-upload"
-          className="flex-none cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-base font-semibold text-white hover:bg-zinc-700"
+          className="flex-none cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-body font-semibold text-white hover:bg-zinc-700"
         >
           {uploading ? "Uploading…" : "+ Upload Video"}
         </label>
@@ -277,7 +277,7 @@ function VideoEditor({
                 addLink();
               }
             }}
-            className={`flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-base text-zinc-900 focus:outline-none ${
+            className={`flex-1 min-w-0 rounded-xl border px-3 py-2.5 text-body text-zinc-900 focus:outline-none ${
               linkError ? "border-red-500 focus:border-red-500" : "border-zinc-300 focus:border-zinc-900"
             }`}
           />
@@ -285,14 +285,14 @@ function VideoEditor({
             type="button"
             onClick={addLink}
             disabled={!link.trim()}
-            className="flex-none rounded-xl border border-zinc-900 px-5 py-3 text-base font-semibold text-zinc-900 hover:bg-zinc-50 disabled:border-zinc-300 disabled:text-zinc-400"
+            className="flex-none rounded-xl border border-zinc-900 px-5 py-3 text-body font-semibold text-zinc-900 hover:bg-zinc-50 disabled:border-zinc-300 disabled:text-zinc-400"
           >
             + Add Link
           </button>
         </div>
       </div>
       {linkError && (
-        <p className="mt-2 text-sm text-red-600">That doesn&apos;t look like a YouTube video link.</p>
+        <p className="mt-2 text-caption text-red-600">That doesn&apos;t look like a YouTube video link.</p>
       )}
     </div>
   );
@@ -385,7 +385,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
     <div className="pb-32">
       <button
         onClick={() => router.push("/admin")}
-        className="mb-6 text-sm font-semibold text-zinc-500 hover:text-zinc-900"
+        className="mb-6 text-caption font-semibold text-zinc-500 hover:text-zinc-900"
       >
         ← Back to All Vehicles
       </button>
@@ -401,7 +401,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Basic info */}
         <section className="rounded-2xl bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Basic Info</h2>
+          <h2 className="text-body font-bold text-zinc-900 mb-4">Basic Info</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field
               label="Short Name (shown on kiosk cards)"
@@ -452,8 +452,8 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Performance stats */}
         <section className="rounded-2xl bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Performance Stats</h2>
-          <p className="text-sm text-zinc-500 mb-4">
+          <h2 className="text-body font-bold text-zinc-900 mb-4">Performance Stats</h2>
+          <p className="text-caption text-zinc-500 mb-4">
             These power the animated stat pills shown on the kiosk vehicle page.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -484,13 +484,13 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Hero image */}
         <section className="rounded-2xl bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Main Photo</h2>
+          <h2 className="text-body font-bold text-zinc-900 mb-4">Main Photo</h2>
           <div className="flex items-center gap-5">
             <div className="relative w-40 h-28 rounded-xl bg-zinc-100 overflow-hidden flex-none">
               {form.heroImage ? (
                 <Image src={form.heroImage} alt="" fill className="object-contain" />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-xs text-zinc-400 text-center px-2">
+                <div className="absolute inset-0 flex items-center justify-center text-caption text-zinc-400 text-center px-2">
                   No photo yet
                 </div>
               )}
@@ -506,7 +506,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
               />
               <label
                 htmlFor="hero-upload"
-                className="inline-block cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-base font-semibold text-white hover:bg-zinc-700"
+                className="inline-block cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-body font-semibold text-white hover:bg-zinc-700"
               >
                 {uploadingHero ? "Uploading…" : "Change Main Photo"}
               </label>
@@ -516,7 +516,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Specs */}
         <section className="rounded-2xl bg-white p-6 shadow flex flex-col gap-6">
-          <h2 className="text-lg font-bold text-zinc-900">Specifications</h2>
+          <h2 className="text-body font-bold text-zinc-900">Specifications</h2>
           {SPEC_SECTIONS.map((s) => (
             <ListEditor
               key={s.key}
@@ -530,7 +530,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Videos */}
         <section className="rounded-2xl bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Videos</h2>
+          <h2 className="text-body font-bold text-zinc-900 mb-4">Videos</h2>
           <VideoEditor
             videos={form.videos}
             onChange={(v) => update("videos", v)}
@@ -541,7 +541,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
 
         {/* Photos */}
         <section className="rounded-2xl bg-white p-6 shadow">
-          <h2 className="text-lg font-bold text-zinc-900 mb-4">Photos</h2>
+          <h2 className="text-body font-bold text-zinc-900 mb-4">Photos</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
             {form.photos.map((url) => (
               <div key={url} className="relative aspect-video rounded-xl bg-zinc-100 overflow-hidden group">
@@ -549,7 +549,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
                 <button
                   type="button"
                   onClick={() => removePhoto(url)}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 text-white text-lg flex items-center justify-center hover:bg-black"
+                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/70 text-white text-body flex items-center justify-center hover:bg-black"
                   aria-label="Remove photo"
                 >
                   ×
@@ -568,7 +568,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
           />
           <label
             htmlFor="photos-upload"
-            className="inline-block cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-base font-semibold text-white hover:bg-zinc-700"
+            className="inline-block cursor-pointer rounded-xl bg-zinc-900 px-5 py-3 text-body font-semibold text-white hover:bg-zinc-700"
           >
             {uploadingPhotos ? "Uploading…" : "+ Add Photos"}
           </label>
@@ -578,7 +578,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
           <button
             type="button"
             onClick={() => setConfirmDelete(true)}
-            className="self-start text-sm font-semibold text-red-600 hover:text-red-700"
+            className="self-start text-caption font-semibold text-red-600 hover:text-red-700"
           >
             Delete This Vehicle
           </button>
@@ -593,7 +593,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
         <button
           onClick={handleSave}
           disabled={busy}
-          className="rounded-xl bg-[#5B9BD5] px-8 py-4 text-lg font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors disabled:opacity-50"
+          className="rounded-xl bg-[#5B9BD5] px-8 py-4 text-body font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors disabled:opacity-50"
         >
           {saving ? "Saving…" : "Save Changes"}
         </button>

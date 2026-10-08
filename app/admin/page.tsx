@@ -32,16 +32,16 @@ export default function AdminHomePage() {
         <h1 className="text-3xl font-bold text-zinc-900">Your Vehicles</h1>
         <button
           onClick={() => router.push("/admin/new")}
-          className="rounded-xl bg-[#5B9BD5] px-6 py-4 text-lg font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors"
+          className="rounded-xl bg-[#5B9BD5] px-6 py-4 text-body font-semibold text-white shadow hover:bg-[#1B3A5C] transition-colors"
         >
           + Add New Vehicle
         </button>
       </div>
 
       {loading ? (
-        <p className="text-lg text-zinc-500">Loading vehicles…</p>
+        <p className="text-body text-zinc-500">Loading vehicles…</p>
       ) : cars.length === 0 ? (
-        <p className="text-lg text-zinc-500">
+        <p className="text-body text-zinc-500">
           No vehicles yet. Tap &quot;Add New Vehicle&quot; to add your first
           one.
         </p>
@@ -65,16 +65,16 @@ export default function AdminHomePage() {
                       className="object-contain p-2"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-zinc-400 text-sm">
+                    <div className="absolute inset-0 flex items-center justify-center text-zinc-400 text-caption">
                       No photo yet
                     </div>
                   )}
                 </div>
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-sm text-zinc-500">{car.year}</p>
+                    <p className="text-caption text-zinc-500">{car.year}</p>
                     {car.hidden && (
-                      <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-zinc-600">
+                      <span className="rounded-full bg-zinc-200 px-2.5 py-0.5 text-caption font-semibold uppercase tracking-wider text-zinc-600">
                         Hidden
                       </span>
                     )}
@@ -87,20 +87,20 @@ export default function AdminHomePage() {
               <div className="flex gap-2 px-4 pb-4">
                 <button
                   onClick={() => router.push(`/admin/${car.id}`)}
-                  className="flex-1 rounded-lg bg-zinc-900 text-white py-2.5 text-sm font-semibold hover:bg-zinc-700"
+                  className="flex-1 rounded-lg bg-zinc-900 text-white py-2.5 text-caption font-semibold hover:bg-zinc-700"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => toggleHidden(car)}
                   disabled={toggling === car.id}
-                  className="rounded-lg border border-zinc-300 text-zinc-600 px-3 py-2.5 text-sm font-semibold hover:bg-zinc-50 disabled:opacity-50"
+                  className="rounded-lg border border-zinc-300 text-zinc-600 px-3 py-2.5 text-caption font-semibold hover:bg-zinc-50 disabled:opacity-50"
                 >
                   {car.hidden ? "Show" : "Hide"}
                 </button>
                 <button
                   onClick={() => setToDelete(car)}
-                  className="rounded-lg border border-zinc-300 text-zinc-600 px-3 py-2.5 text-sm font-semibold hover:bg-zinc-50"
+                  className="rounded-lg border border-zinc-300 text-zinc-600 px-3 py-2.5 text-caption font-semibold hover:bg-zinc-50"
                 >
                   Remove
                 </button>

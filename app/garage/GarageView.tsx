@@ -1,15 +1,19 @@
 "use client";
-import {useState, useEffect} from "react";
+import {useState, useEffect, useRef} from "react";
 import {useRouter} from "next/navigation";
 import Logo from "@/components/Logo";
 import type {Car} from "@/lib/cars";
 import Image from "next/image";
 
+// 3×2 in landscape, 2×3 in portrait — six cars per page either way.
+const PER_PAGE = 6;
+const SWIPE_PX = 60;
+
 // Renders "(…)" segments of a title smaller and dimmer than the main text.
 function CarTitle({name}: {name: string}) {
   return name.split(/(\([^)]*\))/).map((part, i) =>
     part.startsWith("(") ? (
-      <span key={i} className="text-lg text-zinc-400">
+      <span key={i} className="text-lead text-zinc-400">
         {part}
       </span>
     ) : (
@@ -18,79 +22,124 @@ function CarTitle({name}: {name: string}) {
   );
 }
 
+function PageArrow({dir, disabled, onClick}: {dir: "prev" | "next"; disabled: boolean; onClick: () => void}) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      aria-label={dir === "prev" ? "Previous page" : "Next page"}
+      className="pressable size-touch rounded-full border border-zinc-700 text-zinc-300 flex items-center justify-center active:bg-zinc-900 disabled:opacity-30"
+    >
+      <svg className="size-s4" viewBox="0 0 20 20" fill="none">
+        <path
+          d={dir === "prev" ? "M12 4l-6 6 6 6" : "M8 4l6 6-6 6"}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
 export default function GarageView({cars}: {cars: Car[]}) {
   const router = useRouter();
   const [visible, setVisible] = useState(false);
+  const [page, setPage] = useState(0);
+  const pageCount = Math.max(1, Math.ceil(cars.length / PER_PAGE));
+  const pageCars = cars.slice(page * PER_PAGE, (page + 1) * PER_PAGE);
+
+  // Horizontal swipe pages the grid; a swipe must not also open a car.
+  const swipe = useRef<{x: number; moved: boolean} | null>(null);
 
   useEffect(() => {
     setTimeout(() => setVisible(true), 50);
   }, []);
 
+  function go(delta: number) {
+    setPage((p) => Math.min(pageCount - 1, Math.max(0, p + delta)));
+  }
+
   return (
-    <div className="w-screen h-screen bg-black flex flex-col overflow-hidden">
+    <div className="screen bg-black">
       {/* Header */}
       <header
-        className={`flex-none flex items-center justify-between px-12 pt-10 pb-6 transition-all duration-700 ${
+        className={`mx-page flex items-center justify-between gap-s4 pt-s6 pb-s3 border-b border-zinc-800 transition-all duration-700 ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
         }`}
       >
         <button
           onClick={() => router.push("/")}
-          className="flex flex-col gap-0.5 group"
+          aria-label="Home"
+          className="pressable min-h-touch flex items-center"
         >
-          <Logo onDark className="w-40 h-auto" />
+          <Logo onDark className="w-[clamp(140px,16vmin,240px)] h-auto" />
         </button>
 
-        <div className="text-right">
-          <p className="font-inter text-xs tracking-[0.3em] uppercase text-zinc-500">
-            Select a vehicle
-          </p>
-        </div>
+        <p className="font-inter text-caption tracking-[0.3em] uppercase text-zinc-500 text-right">
+          Select a vehicle
+        </p>
       </header>
 
-      {/* Divider rule */}
-      <div
-        className={`flex-none h-[1px] bg-zinc-800 mx-12 transition-all duration-700 delay-100 ${visible ? "opacity-100" : "opacity-0"}`}
-      />
-
       {/* Car Grid */}
-      <main className="flex-1 overflow-y-auto scroll-container px-20 py-8 ">
+      <main
+        className="min-h-0 px-page py-s4"
+        onPointerDown={(e) => (swipe.current = {x: e.clientX, moved: false})}
+        onPointerMove={(e) => {
+          if (swipe.current && Math.abs(e.clientX - swipe.current.x) > 12) swipe.current.moved = true;
+        }}
+        onPointerUp={(e) => {
+          const s = swipe.current;
+          if (!s) return;
+          const dx = e.clientX - s.x;
+          if (pageCount > 1 && Math.abs(dx) > SWIPE_PX) go(dx < 0 ? 1 : -1);
+        }}
+        onClickCapture={(e) => {
+          if (swipe.current?.moved) {
+            e.stopPropagation();
+            e.preventDefault();
+          }
+          swipe.current = null;
+        }}
+      >
         {cars.length === 0 ? (
           <div className="flex items-center justify-center h-full">
-            <p className="font-inter text-xs tracking-[0.3em] uppercase text-zinc-600">
+            <p className="font-inter text-caption tracking-[0.3em] uppercase text-zinc-600">
               No vehicles found
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-4 pb-8">
-            {cars.map((car, i) => (
+          <div
+            key={page}
+            className="h-full grid gap-s3 grid-cols-3 grid-rows-2 portrait:grid-cols-2 portrait:grid-rows-3"
+          >
+            {pageCars.map((car, i) => (
               <button
                 key={car.id}
                 onClick={() => router.push(`/car/${car.id}`)}
-                className={`group flex flex-col relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 hover:border-zinc-600 active:border-white transition-all duration-300 text-left ${
-                  visible
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-6"
-                }`}
-                style={{transitionDelay: `${150 + i * 60}ms`}}
+                data-nav-default={i === 0 ? "" : undefined}
+                className="rise-in pressable group min-h-0 flex flex-col relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800 active:border-white text-left"
+                style={{animationDelay: `${150 + i * 60}ms`}}
               >
-                {/* Car image area */}
-                <div className="relative h-44 bg-zinc-950 flex items-end justify-center overflow-hidden">
+                {/* Car image area — w-full: older Chromium (webOS) doesn't stretch flex children of a <button> */}
+                <div className="relative w-full flex-1 min-h-0 bg-zinc-950 overflow-hidden">
                   {/* Gradient floor */}
-                  <div className="absolute h-full bottom-0 left-0 right-0  bg-gradient-to-t from-zinc-900 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 to-transparent" />
 
                   {car.heroImage ? (
                     <Image
                       src={car.heroImage}
                       alt={car.model}
                       fill
-                      className="object-contain group-hover:scale-105 p-4 pb-0 transition-transform duration-500 car-image "
-                      onError={() => {}}
+                      loading="eager"
+                      sizes="(orientation: portrait) 50vw, 33vw"
+                      className="object-contain px-s3 pt-s3 transition-transform duration-500 group-active:scale-105"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center">
                       <svg
-                        className="w-24 h-24 text-zinc-700"
+                        className="w-1/3 h-auto text-zinc-700"
                         viewBox="0 0 100 50"
                         fill="currentColor"
                       >
@@ -101,28 +150,18 @@ export default function GarageView({cars}: {cars: Car[]}) {
                 </div>
 
                 {/* Info */}
-                <div className="p-4 pt-2">
-                  <p className="font-inter text-[10px] tracking-[0.3em] uppercase text-zinc-500 mb-1">
+                <div className="w-full flex-none px-s3 pt-s2 pb-s3">
+                  <p className="font-inter text-caption tracking-[0.3em] uppercase text-zinc-500 mb-s1">
                     {car.year}
                   </p>
-                  <h2 className="font-bebas text-2xl tracking-wider text-white leading-tight">
+                  <h2 className="font-bebas text-title tracking-wider text-white portrait:min-h-[2.2em]">
                     <CarTitle name={car.shortName} />
                   </h2>
-                  {/* {car.productionNumber && (
-                    <p className="font-inter text-[10px] text-zinc-500 mt-1">
-                      #{car.productionNumber}
-                    </p>
-                  )}
-                  {car.usCount && (
-                    <p className="font-inter text-[10px] text-zinc-600 mt-0.5">
-                      {car.usCount}
-                    </p>
-                  )} */}
                 </div>
 
-                {/* Hover arrow */}
-                <div className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                {/* Tap / focus arrow */}
+                <div className="absolute top-s2 right-s2 size-s6 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-active:opacity-100 group-focus-visible:opacity-100 transition-opacity duration-200">
+                  <svg className="size-s3" viewBox="0 0 14 14" fill="none">
                     <path
                       d="M3 7h8M7 3l4 4-4 4"
                       stroke="white"
@@ -138,14 +177,28 @@ export default function GarageView({cars}: {cars: Car[]}) {
         )}
       </main>
 
-      {/* Bottom tagline */}
-      <div
-        className={`flex-none pb-6 flex justify-center transition-all duration-700 delay-700 ${visible ? "opacity-100" : "opacity-0"}`}
+      {/* Footer: page controls (only when needed) + tagline */}
+      <footer
+        className={`flex flex-col items-center gap-s2 pb-s4 transition-all duration-700 delay-700 ${visible ? "opacity-100" : "opacity-0"}`}
       >
-        <p className="font-inter text-[10px] tracking-[0.35em] uppercase text-zinc-700">
+        {pageCount > 1 && (
+          <div className="flex items-center gap-s4">
+            <PageArrow dir="prev" disabled={page === 0} onClick={() => go(-1)} />
+            <div className="flex items-center gap-s1" aria-label={`Page ${page + 1} of ${pageCount}`}>
+              {Array.from({length: pageCount}).map((_, i) => (
+                <span
+                  key={i}
+                  className={`size-s2 rounded-full transition-colors ${i === page ? "bg-white" : "bg-zinc-700"}`}
+                />
+              ))}
+            </div>
+            <PageArrow dir="next" disabled={page === pageCount - 1} onClick={() => go(1)} />
+          </div>
+        )}
+        <p className="font-inter text-caption tracking-[0.35em] uppercase text-zinc-700">
           There is no substitute.
         </p>
-      </div>
+      </footer>
     </div>
   );
 }

@@ -1,9 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import RemoteNav from "@/components/RemoteNav";
+import DebugOverlay from "@/components/DebugOverlay";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "LC4 — La Casita 4",
   description: "La Casita 4 — There is no substitute.",
+};
+
+// Fixed kiosk: lay out at the device width and never pinch-zoom.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
@@ -20,6 +30,8 @@ export default function RootLayout({
       </head>
       <body className="bg-black text-white antialiased">
         {children}
+        <RemoteNav />
+        <DebugOverlay />
       </body>
     </html>
   );

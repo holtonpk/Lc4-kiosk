@@ -22,14 +22,14 @@ export default function ConfirmDialog({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6" data-nav-scope role="dialog" aria-modal="true">
       <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl">
         <h2 className="text-xl font-bold text-zinc-900">{title}</h2>
-        <p className="mt-2 text-base text-zinc-600 leading-relaxed">{message}</p>
+        <p className="mt-2 text-body text-zinc-600 leading-relaxed">{message}</p>
         <div className="mt-6 flex flex-col gap-3">
           <button
             onClick={onConfirm}
-            className={`w-full rounded-xl py-4 text-lg font-semibold text-white transition-colors ${
+            className={`w-full rounded-xl py-4 text-body font-semibold text-white transition-colors ${
               danger ? "bg-red-600 hover:bg-red-700" : "bg-zinc-900 hover:bg-zinc-800"
             }`}
           >
@@ -37,7 +37,7 @@ export default function ConfirmDialog({
           </button>
           <button
             onClick={onCancel}
-            className="w-full rounded-xl border border-zinc-300 py-4 text-lg font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
+            className="w-full rounded-xl border border-zinc-300 py-4 text-body font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
           >
             {cancelLabel}
           </button>
