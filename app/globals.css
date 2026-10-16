@@ -59,6 +59,13 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Images are never draggable: a press-and-drag would pull a ghost copy of
+   the photo off the page and cancel the garage swipe. */
+img,
+svg {
+  -webkit-user-drag: none;
+}
+
 input,
 textarea,
 select,
@@ -91,6 +98,19 @@ select,
 .pressable:active {
   transform: scale(0.97);
   filter: brightness(1.3);
+}
+
+/* Garage swipe: once a press turns into a drag, drop the pressed look. */
+[data-dragging] .pressable:active {
+  transform: none;
+  filter: none;
+  border-color: var(--color-zinc-800);
+}
+[data-dragging] .group:active img {
+  scale: none;
+}
+[data-dragging] .group:active .tap-arrow {
+  opacity: 0;
 }
 
 /* Entrance for grid items; stagger with an inline animation-delay. */

@@ -5,6 +5,7 @@ import type {Car} from "@/lib/cars";
 import Image from "next/image";
 import {youTubeId, youTubeThumbnail, youTubeEmbed} from "@/lib/youtube";
 import {useFitGrid, useFitScale} from "@/lib/useFit";
+import {useLiveCar} from "@/lib/useLiveCars";
 
 type Tab = "specs" | "videos" | "photos";
 type LightboxMedia = {type: "image" | "video" | "youtube"; src: string; title?: string};
@@ -235,8 +236,15 @@ function StatPill({
   );
 }
 
-export default function CarView({car}: {car: Car}) {
+export default function CarView({car: initialCar}: {car: Car}) {
   const router = useRouter();
+  const liveCar = useLiveCar(initialCar);
+  const car = liveCar ?? initialCar;
+
+  // Deleted or hidden in the admin while on screen: back to the garage.
+  useEffect(() => {
+    if (!liveCar) router.replace("/garage");
+  }, [liveCar, router]);
   const [tab, setTab] = useState<Tab>("specs");
   const [visible, setVisible] = useState(false);
   const [statsVisible, setStatsVisible] = useState(false);

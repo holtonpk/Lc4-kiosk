@@ -39,8 +39,8 @@ function measure() {
     const r = el.getBoundingClientRect();
     return c.visibility !== "hidden" && c.display !== "none" && r.width > 0 && r.height > 0;
   };
-  // Ignore the Next.js dev-mode indicator.
-  const all = [...document.querySelectorAll("body *")].filter((el) => !el.closest("nextjs-portal"));
+  // Ignore the Next.js dev-mode indicator and off-screen carousel pages (inert).
+  const all = [...document.querySelectorAll("body *")].filter((el) => !el.closest("nextjs-portal, [inert]"));
 
   const scrollers = all
     .filter((el) => {
@@ -75,14 +75,16 @@ function measure() {
 }
 
 async function carIds(page) {
-  await page.goto(`${BASE}/garage`, {waitUntil: "networkidle0"});
+  await page.goto(`${BASE}/garage`, {waitUntil: "load"});
   const html = await page.content();
   return [...new Set([...html.matchAll(/\\?"id\\?":\\?"([\w-]+)\\?"/g)].map((m) => m[1]))];
 }
 
 async function settle() {
-  // Entrance animations run up to ~1.2s; images load eagerly.
-  await new Promise((r) => setTimeout(r, 2000));
+  // Entrance animations run up to ~1.2s; images load eagerly. (Pages keep a
+  // live Firestore connection open, so "networkidle" never happens — wait on
+  // the load event plus this settle time instead.)
+  await new Promise((r) => setTimeout(r, 2500));
 }
 
 (async () => {
@@ -108,7 +110,7 @@ async function settle() {
   for (const size of SIZES) {
     await page.setViewport({width: size.w, height: size.h, deviceScaleFactor: 1});
     for (const v of views) {
-      await page.goto(BASE + v.path, {waitUntil: "networkidle0", timeout: 120000});
+      await page.goto(BASE + v.path, {waitUntil: "load", timeout: 120000});
       if (v.tab) await page.evaluate((t) => [...document.querySelectorAll("[role=tab]")].find((b) => b.textContent.trim() === t)?.click(), v.tab);
       if (v.lightbox) await page.click('[aria-label="View full screen"]');
       await settle();
@@ -130,14 +132,14 @@ async function settle() {
 
   // Remote: arrow keys move focus across the garage, OK opens a car.
   await page.setViewport({width: 1920, height: 1080, deviceScaleFactor: 1});
-  await page.goto(`${BASE}/garage`, {waitUntil: "networkidle0"});
+  await page.goto(`${BASE}/garage`, {waitUntil: "load"});
   await settle();
   const focusTrail = [];
   for (const key of ["ArrowRight", "ArrowRight", "ArrowDown", "ArrowLeft"]) {
     await page.keyboard.press(key);
     focusTrail.push(await page.evaluate(() => document.activeElement?.textContent?.trim().slice(0, 20) || document.activeElement?.tagName));
   }
-  await Promise.all([page.waitForNavigation({waitUntil: "networkidle0"}).catch(() => null), page.keyboard.press("Enter")]);
+  await Promise.all([page.waitForNavigation({waitUntil: "load"}).catch(() => null), page.keyboard.press("Enter")]);
   const remoteOk = new Set(focusTrail).size === focusTrail.length && page.url().includes("/car/");
   failures += remoteOk ? 0 : 1;
   console.log(`${remoteOk ? "PASS" : "FAIL"}  remote    focus ${focusTrail.join(" → ")} → OK opened ${page.url().replace(BASE, "")}`);

@@ -33,7 +33,8 @@ function scan(): Stats {
   let scrolling = 0;
   for (const el of document.body.querySelectorAll<HTMLElement>("*")) {
     // SVG internals are clipped by their viewBox (the logo crops on purpose).
-    if (el.closest("[data-debug-overlay], nextjs-portal") || el.parentElement?.closest("svg")) continue;
+    // Off-screen carousel pages are inert and clipped on purpose.
+    if (el.closest("[data-debug-overlay], nextjs-portal, [inert]") || el.parentElement?.closest("svg")) continue;
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) continue;
     const p = el.parentElement?.getBoundingClientRect();

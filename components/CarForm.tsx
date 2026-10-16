@@ -173,11 +173,13 @@ function VideoEditor({
   videos,
   onChange,
   onUpload,
+  onRemoveFile,
   uploading,
 }: {
   videos: {title: string; url: string}[];
   onChange: (videos: {title: string; url: string}[]) => void;
   onUpload: (file: File) => void;
+  onRemoveFile: (url: string) => void;
   uploading: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -187,7 +189,7 @@ function VideoEditor({
   function removeAt(i: number) {
     const removed = videos[i];
     onChange(videos.filter((_, idx) => idx !== i));
-    if (removed.url && !youTubeId(removed.url)) deleteCarFile(removed.url);
+    if (removed.url && !youTubeId(removed.url)) onRemoveFile(removed.url);
   }
 
   function addLink() {
@@ -319,6 +321,13 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
   const [deleting, setDeleting] = useState(false);
   const heroInputRef = useRef<HTMLInputElement>(null);
   const photosInputRef = useRef<HTMLInputElement>(null);
+  // Replaced/removed files are deleted only after a successful save — until
+  // then the live kiosk still shows them, so deleting early blanks it.
+  const pendingDeletes = useRef<string[]>([]);
+
+  function deleteAfterSave(url: string) {
+    pendingDeletes.current.push(url);
+  }
 
   function update<K extends keyof Omit<Car, "id">>(key: K, value: Omit<Car, "id">[K]) {
     setForm((f) => ({...f, [key]: value}));
@@ -341,7 +350,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
       const url = await uploadCarImage(id, hero.file);
       const oldUrl = form.heroImage;
       update("heroImage", url);
-      if (oldUrl) await deleteCarFile(oldUrl);
+      if (oldUrl) deleteAfterSave(oldUrl);
       setHeroNote({
         error: false,
         text: `${hero.trimmed ? "Trimmed and resized" : "Resized"} to ${hero.width}×${hero.height}, ${Math.round(hero.file.size / 1000)} KB`,
@@ -368,7 +377,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
   async function removePhoto(url: string) {
     setForm((f) => ({...f, photos: f.photos.filter((p) => p !== url)}));
     setSaved(false);
-    await deleteCarFile(url);
+    deleteAfterSave(url);
   }
 
   async function handleVideoUpload(file: File) {
@@ -382,6 +391,9 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
   async function handleSave() {
     setSaving(true);
     await saveCar({id, ...form});
+    const toDelete = pendingDeletes.current;
+    pendingDeletes.current = [];
+    await Promise.all(toDelete.map(deleteCarFile));
     setSaving(false);
     setSaved(true);
     if (mode === "new") router.replace(`/admin/${id}`);
@@ -552,6 +564,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
             videos={form.videos}
             onChange={(v) => update("videos", v)}
             onUpload={handleVideoUpload}
+            onRemoveFile={deleteAfterSave}
             uploading={uploadingVideo}
           />
         </section>
