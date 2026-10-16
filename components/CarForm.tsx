@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import Image from "next/image";
 import {emptyCar, newCarId, saveCar, deleteCar, type Car, type CarSpec} from "@/lib/cars";
 import {uploadCarImage, uploadCarVideo, deleteCarFile} from "@/lib/storage";
+import {prepareHeroImage} from "@/lib/heroImage";
 import {youTubeId, youTubeEmbed, youTubeWatchUrl} from "@/lib/youtube";
 import ConfirmDialog from "@/components/ConfirmDialog";
 
@@ -311,6 +312,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploadingHero, setUploadingHero] = useState(false);
+  const [heroNote, setHeroNote] = useState<{error: boolean; text: string} | null>(null);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -332,12 +334,24 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadingHero(true);
-    const url = await uploadCarImage(id, file);
-    const oldUrl = form.heroImage;
-    update("heroImage", url);
-    if (oldUrl) await deleteCarFile(oldUrl);
-    setUploadingHero(false);
-    if (heroInputRef.current) heroInputRef.current.value = "";
+    setHeroNote(null);
+    try {
+      // Trim and resize to the kiosk spec (2:1, ≤2000×1000, ≤~1 MB) before upload.
+      const hero = await prepareHeroImage(file);
+      const url = await uploadCarImage(id, hero.file);
+      const oldUrl = form.heroImage;
+      update("heroImage", url);
+      if (oldUrl) await deleteCarFile(oldUrl);
+      setHeroNote({
+        error: false,
+        text: `${hero.trimmed ? "Trimmed and resized" : "Resized"} to ${hero.width}×${hero.height}, ${Math.round(hero.file.size / 1000)} KB`,
+      });
+    } catch (err) {
+      setHeroNote({error: true, text: err instanceof Error ? err.message : "Upload failed. Please try again."});
+    } finally {
+      setUploadingHero(false);
+      if (heroInputRef.current) heroInputRef.current.value = "";
+    }
   }
 
   async function handlePhotosAdd(e: React.ChangeEvent<HTMLInputElement>) {
@@ -486,7 +500,7 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
         <section className="rounded-2xl bg-white p-6 shadow">
           <h2 className="text-body font-bold text-zinc-900 mb-4">Main Photo</h2>
           <div className="flex items-center gap-5">
-            <div className="relative w-40 h-28 rounded-xl bg-zinc-100 overflow-hidden flex-none">
+            <div className="relative w-56 aspect-[2/1] rounded-xl bg-zinc-100 overflow-hidden flex-none">
               {form.heroImage ? (
                 <Image src={form.heroImage} alt="" fill className="object-contain" />
               ) : (
@@ -510,6 +524,9 @@ export default function CarForm({mode, car}: {mode: "new" | "edit"; car?: Car}) 
               >
                 {uploadingHero ? "Uploading…" : "Change Main Photo"}
               </label>
+              <p className={`mt-2 text-caption ${heroNote?.error ? "text-red-600" : "text-zinc-500"}`}>
+                {heroNote?.text ?? "Cut-out PNG works best. It's trimmed to the car and resized for the kiosk automatically."}
+              </p>
             </div>
           </div>
         </section>
